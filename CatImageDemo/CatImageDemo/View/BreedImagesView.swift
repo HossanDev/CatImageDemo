@@ -7,8 +7,9 @@
 import SwiftUI
 
 struct BreedImagesView: View {
+  
   let breedID: String
-  let imageLoader = ImageLoader()
+  private let imageLoader = ImageLoader()
   @State private var imageElements: [ImageElement] = []
   @State private var errorMessage: String?
   
@@ -25,41 +26,26 @@ struct BreedImagesView: View {
   private var contentView: some View {
     Group {
       if isLoading {
-        loadingView
+        ProgressView("Loading Images...")
+          .progressViewStyle(CircularProgressViewStyle())
       } else if let error = errorMessage {
-        errorView(error)
-      } else if imageElements.isEmpty {
-        emptyView
+        Text("Error: \(error)")
+          .foregroundColor(.red)
+          .padding()
       } else {
         VStack {
-          imagesHStackView
+          catBreedImagesView
           loadMoreBreedImageButton()
         }
       }
     }
   }
   
-  private var loadingView: some View {
-    ProgressView("Loading Images...")
-      .progressViewStyle(CircularProgressViewStyle())
-  }
-  
-  private func errorView(_ error: String) -> some View {
-    Text("Error: \(error)")
-      .foregroundColor(.red)
-      .padding()
-  }
-  
-  private var emptyView: some View {
-    Text("No images found.")
-      .padding()
-  }
-  
-  private var imagesHStackView: some View {
+  private var catBreedImagesView: some View {
     ScrollView(.horizontal, showsIndicators: false) {
       HStack(spacing: 20) {
-        ForEach(imageElements) { image in
-          if let imageURL = URL(string: image.url) {
+        ForEach(imageElements) {
+          if let imageURL = URL(string: $0.url) {
             CatAsyncImageView(url: imageURL)
               .frame(width: 180, height: 180)
           } else {
