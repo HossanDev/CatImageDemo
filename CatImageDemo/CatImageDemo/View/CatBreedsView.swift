@@ -8,12 +8,7 @@ import SwiftUI
 
 struct CatBreedView: View {
   let breed: Breeds
-  @StateObject private var viewModel: CatListViewModel
-  
-  init(breed: Breeds, viewModel: CatListViewModel) {
-    self.breed = breed
-    _viewModel = StateObject(wrappedValue: viewModel)
-  }
+  @StateObject var viewModel: CatListViewModel
   
   var body: some View {
     NavigationStack {
