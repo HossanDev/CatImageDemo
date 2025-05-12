@@ -40,7 +40,7 @@ struct CatListView: View {
         .padding(.vertical, 80)
         .navigationDestination(isPresented: $isBreedViewActive) {
           if let breed = selectedBreed {
-            CatBreedView(breed: breed)
+            CatBreedView(breed: breed, viewModel: viewModel)
           }
         }
         .navigationTitle(Text(LocalizedStringKey("Cat Image")))

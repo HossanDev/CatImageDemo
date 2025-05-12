@@ -10,6 +10,21 @@ import Foundation
 
 class MockCatRepository: CatRepositoryProtocol {
   
+  var mockImages: [ImageElement]
+  var errorToThrow: Error?
+  
+  init(mockImages: [ImageElement] = [], errorToThrow: Error? = nil) {
+    self.mockImages = mockImages
+    self.errorToThrow = errorToThrow
+  }
+  
+  func fetchBreedImages(breedID: String, limit: Int = 1) async throws -> [CatImageDemo.ImageElement] {
+    if let error = errorToThrow {
+      throw error
+    }
+    return mockImages
+  }
+  
   func fetchCats(from urlString: String) async throws -> CatImageDemo.Cat {
     
     do {

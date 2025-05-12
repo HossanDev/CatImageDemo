@@ -15,6 +15,7 @@ enum ViewState {
 
 protocol CatListViewModelAction: ObservableObject {
   func getCatList(urlStr: String) async
+  func fetchBreedImages(breedID: String, limit: Int) async
 }
 
 // MARK: - Cat List ViewModel Implementation
@@ -23,6 +24,8 @@ final class CatListViewModel: CatListViewModelAction, ObservableObject {
   
   @Published private(set) var viewState: ViewState = .loading
   @Published var catList: Cat = []
+  @Published var breedImages: [ImageElement] = []
+  @Published var errorMessage: String?
   private let repository: CatRepositoryProtocol
   
   init(repository: CatRepositoryProtocol) {
@@ -37,6 +40,16 @@ final class CatListViewModel: CatListViewModelAction, ObservableObject {
       viewState = .loaded
     } catch {
       viewState = .error
+    }
+  }
+  
+  func fetchBreedImages(breedID: String, limit: Int) async  {
+    
+    do {
+      let images = try await repository.fetchBreedImages(breedID: breedID, limit: limit)
+      self.breedImages = images
+    } catch {
+      self.errorMessage = "Failed to fetch images: \(error.localizedDescription)"
     }
   }
 }

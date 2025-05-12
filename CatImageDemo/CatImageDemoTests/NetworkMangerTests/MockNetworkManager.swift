@@ -27,4 +27,8 @@ class MockNetworkManager: NetworkServiceProtocol {
       throw NetworkError.invalidResponse
     }
   }
+  
+  func requestBreedImages(breedID: String, limit: Int) async throws -> Data {
+    return Data()
+  }
 }

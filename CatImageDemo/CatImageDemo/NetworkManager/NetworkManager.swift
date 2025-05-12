@@ -30,5 +30,15 @@ struct NetworkManager: NetworkServiceProtocol {
       throw NetworkError.requestFailed(error)
     }
   }
+  
+  func requestBreedImages(breedID: String, limit: Int) async throws -> Data {
+    
+    let urlString = EndPoint.breedURL(breedID: breedID, limit: limit)
+    guard let url = URL(string: urlString) else {
+      throw NetworkError.invalidURL(urlString)
+    }
+    let (data, _) = try await session.data(from: url)
+    return data
+  }
 }
 

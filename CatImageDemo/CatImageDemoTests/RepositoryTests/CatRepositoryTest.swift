@@ -11,7 +11,7 @@ import XCTest
 final class CatRepositoryTest: XCTestCase {
   
   var mockNetworkManager: MockNetworkManager?
-  var catRepository: CatRepository?
+  var catRepository: CatRepositoryProtocol?
   
   override func setUpWithError() throws {
     // Put setup code here. This method is called before the invocation of each test method in the class.
@@ -72,28 +72,27 @@ final class CatRepositoryTest: XCTestCase {
                    height: 300)
     ]
     
-    // WHEN
-    let mockImageLoader = MockImageLoader(mockImages: mockImages)
-    guard let breedID = mockImages.first?.id else {
-      XCTFail("Mock image ID is nil")
-      return
-    }
-    
-    let breedImages = try await mockImageLoader.fetchBreedImages(breedID: breedID)
-    
-    //THEN
-    XCTAssertEqual(breedImages.count, 1)
-    XCTAssertEqual(breedImages.first?.id, "mock123")
-  }
-  
-  func test_ViewModel_FetchBreedImages_EmptyList() async throws {
-    // GIVEN
-    let mockImageLoader = MockImageLoader(mockImages: [])
+    let mockRepository = MockCatRepository(mockImages: mockImages)
     
     // WHEN
-    let images = try await mockImageLoader.fetchBreedImages(breedID: "some_valid_breed_id")
+    let breedImages = try await mockRepository.fetchBreedImages(breedID: "mock123", limit: 1)
     
     // THEN
-    XCTAssertTrue(images.isEmpty, "Expected image list to be empty for breed ID")
+    XCTAssertEqual(breedImages.count, 1)
+    XCTAssertEqual(breedImages.first?.id, "mock123")
+    XCTAssertEqual(breedImages.first?.url, "https://example.com/image.jpg")
+  }
+  
+  func test_FetchBreedImages_Failure_Case() async {
+    // GIVEN
+    let expectedError = URLError(.notConnectedToInternet)
+    let mockRepository = MockCatRepository(errorToThrow: expectedError)
+    
+    do {
+      _ = try await mockRepository.fetchBreedImages(breedID: "mock123", limit: 1)
+      XCTFail("Expected error but got success")
+    } catch {
+      XCTAssertEqual((error as? URLError)?.code, .notConnectedToInternet)
+    }
   }
 }

@@ -8,5 +8,6 @@
 import Foundation
 
 protocol NetworkServiceProtocol {
-    func request(from urlString: String) async throws -> Data
+  func request(from urlString: String) async throws -> Data
+  func requestBreedImages(breedID: String, limit: Int) async throws -> Data
 }

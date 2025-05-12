@@ -8,9 +8,12 @@ import SwiftUI
 
 struct CatBreedView: View {
   let breed: Breeds
-  private let imageLoader = ImageLoader()
-  @State private var imageElements: [ImageElement] = []
-  @State private var errorMessage: String?
+  @StateObject private var viewModel: CatListViewModel
+  
+  init(breed: Breeds, viewModel: CatListViewModel) {
+    self.breed = breed
+    _viewModel = StateObject(wrappedValue: viewModel)
+  }
   
   var body: some View {
     NavigationStack {
@@ -40,7 +43,7 @@ struct CatBreedView: View {
       if isLoading {
         ProgressView("Loading Images...")
           .progressViewStyle(CircularProgressViewStyle())
-      } else if let error = errorMessage {
+      } else if let error = viewModel.errorMessage {
         Text("Error: \(error)")
           .foregroundColor(.red)
           .padding()
@@ -56,7 +59,7 @@ struct CatBreedView: View {
   private var catBreedImagesView: some View {
     ScrollView(.horizontal, showsIndicators: false) {
       HStack(spacing: 20) {
-        ForEach(imageElements) {
+        ForEach(viewModel.breedImages) {
           if let imageURL = URL(string: $0.url) {
             CatAsyncImageView(url: imageURL)
               .frame(width: 180, height: 180)
@@ -97,28 +100,16 @@ struct CatBreedView: View {
   }
   
   private var isLoading: Bool {
-    imageElements.isEmpty && errorMessage == nil
+    viewModel.breedImages.isEmpty && viewModel.errorMessage == nil
   }
   
   private func fetchBreedImages() async {
-    do {
-      let images = try await imageLoader.fetchBreedImages(breedID: breed.id)
-      imageElements = images
-      
-    } catch {
-      errorMessage = error.localizedDescription
-    }
+    await viewModel.fetchBreedImages(breedID: breed.id, limit: 4)
   }
 }
 
 #Preview {
-  CatBreedView(
-    breed: Breeds(
-      weight: Weight(
-        imperial: "10",
-        metric: "10"),
-      id: "10",
-      name: "Test",
-      temperament: "10",
-      description: "test"))
+  CatBreedView(breed: Breeds(weight: Weight(imperial: "10", metric: "10"), id: "10", name: "Test", temperament: "10",
+      description: "test"),
+      viewModel: CatListViewModel(repository: CatRepository(networkService: NetworkManager())))
 }
