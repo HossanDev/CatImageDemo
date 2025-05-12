@@ -19,7 +19,7 @@ protocol CatListViewModelAction: ObservableObject {
 
 // MARK: - Cat List ViewModel Implementation
 @MainActor
-final class CatListViewModel: CatListViewModelAction {
+final class CatListViewModel: CatListViewModelAction, ObservableObject {
   
   @Published private(set) var viewState: ViewState = .loading
   @Published var catList: Cat = []
