@@ -31,7 +31,7 @@ struct CatBreedView: View {
     .navigationTitle("Breed Details view")
     .navigationBarTitleDisplayMode(.inline)
     .task {
-      await fetchBreedImages(append: false)
+      await fetchBreedImages()
     }
   }
   
@@ -73,10 +73,10 @@ struct CatBreedView: View {
     VStack {
       Button {
         Task {
-          await fetchBreedImages(append: true)
+          await fetchBreedImages()
         }
       } label: {
-        Text("load more breed image")
+        Text("load random breed image")
           .font(.headline)
           .padding()
           .frame(maxWidth: .infinity)
@@ -100,17 +100,11 @@ struct CatBreedView: View {
     imageElements.isEmpty && errorMessage == nil
   }
   
-  private func fetchBreedImages(append: Bool) async {
+  private func fetchBreedImages() async {
     do {
       let images = try await imageLoader.fetchBreedImages(breedID: breed.id)
-      if append {
-        let newImages = images.filter { newBreedImage in
-          !imageElements.contains(where: { $0.id == newBreedImage.id })
-        }
-        imageElements.append(contentsOf: newImages)
-      } else {
-        imageElements = images
-      }
+      imageElements = images
+      
     } catch {
       errorMessage = error.localizedDescription
     }
