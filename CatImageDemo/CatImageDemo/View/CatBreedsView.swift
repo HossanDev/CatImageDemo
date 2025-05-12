@@ -20,11 +20,9 @@ struct CatBreedView: View {
         Text("Temperament: \(breed.temperament)")
           .font(.subheadline)
           .multilineTextAlignment(.leading)
-        // Clear breed images and error before starting fetch
           .onAppear {
             clearBreedImagesBeforeFetch()
           }
-        
         contentView
       }
     }
