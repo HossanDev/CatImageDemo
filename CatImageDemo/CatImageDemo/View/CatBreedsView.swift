@@ -20,6 +20,10 @@ struct CatBreedView: View {
         Text("Temperament: \(breed.temperament)")
           .font(.subheadline)
           .multilineTextAlignment(.leading)
+        // Clear breed images and error before starting fetch
+          .onAppear {
+            clearBreedImagesBeforeFetch()
+          }
         
         contentView
       }
@@ -101,10 +105,18 @@ struct CatBreedView: View {
   private func fetchBreedImages() async {
     await viewModel.fetchBreedImages(breedID: breed.id, limit: 4)
   }
+  
+  private func clearBreedImagesBeforeFetch() {
+    viewModel.breedImages = []
+    viewModel.errorMessage = nil
+  }
 }
 
 #Preview {
-  CatBreedView(breed: Breeds(weight: Weight(imperial: "10", metric: "10"), id: "10", name: "Test", temperament: "10",
+  CatBreedView(breed: Breeds(weight: Weight(imperial: "10", metric: "10"),
+      id: "10",
+      name: "Test",
+      temperament: "10",
       description: "test"),
       viewModel: CatListViewModel(repository: CatRepository(networkService: NetworkManager())))
 }
